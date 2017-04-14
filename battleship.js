@@ -21,17 +21,49 @@ var randomRow = Math.floor(Math.random()*10)
 var randomCell = Math.floor(Math.random()*10)
 
 
-//something is broken with the randomRow Random Cell generator and the check for hits
+//something is broken with the randomRow Random Cell generator and the check for hit
+
+function fit(row, cell) {
+// x
+  var a = row - 1
+  if (a < 0) {
+    a = row
+  }
+// xx
+  var aa = row + 1
+  if (aa > 9) {
+    aa = row
+  }
+// y
+  var d = cell - 1
+  if (d < 0) {
+    d = cell
+  }
+// yy
+  var dd = cell + 1
+  if (dd > 9) {
+    dd = cell
+  }
+
+  return (ships[row][cell] === "ship" ||
+          ships[row][d] === "ship" ||
+          ships[row][dd] === "ship" ||
+          ships[a][cell] === "ship" ||
+          ships[a][d] === "ship" ||
+          ships[a][dd] === "ship" ||
+          ships[aa][cell] === "ship" ||
+          ships[aa][d] === "ship" ||
+          ships[aa][dd] === "ship"
+          )
+}
+
 function generateShips() {
   while (otherCounter < 5) {
-    while((ships[randomRow][randomCell - 1] == "ship") ||  (ships[randomRow + 1][randomCell] == "ship") ||
-    (ships[randomRow][randomCell + 1] == "ship") ||
-    (ships[randomRow][randomCell] == "ship")) {
+    while(fit(randomRow, randomCell)) {
       randomRow = Math.floor(Math.random()*10)
       randomCell = Math.floor(Math.random()*10)
     }
-    console.log(randomRow)
-    console.log(randomCell)
+    console.log("Row: " + randomRow + " Cell: " + randomCell)
     ships[randomRow][randomCell] = "ship"
     otherCounter++
     randomRow = Math.floor(Math.random()*10)
@@ -51,31 +83,32 @@ for (var x = 0; x < 10; x++) {
     var createCells = document.getElementById(x)
     var td = createCells.insertCell(y)
     td.setAttribute("onclick", "checkForHits(event)")
-
-
     td.id = "" + x + y
   }
 }
-//checkForHits is a function that reclasses the td's to a hit or miss
-//
+
+
 function checkForHits(e){
   var coordinate = e.target.id
+  var row = coordinate[0]
+  var col = coordinate[1]
 
-  if(ships[parseInt(tr.id)][coordinate.split("")[1]] === "ship" && hitCounter > 0 && missCounter > 0) {
+  // var row =
+  if(ships[row][col] === "ship" && hitCounter > 0 && missCounter > 0) {
     document.getElementById(coordinate).className = "hit"
     document.getElementById(coordinate).innerHTML = "<img src='http://www.clker.com/cliparts/c/Z/f/z/4/J/navy-ship-hi.png'/>"
     hitCounter--
     document.getElementById("hits").innerHTML = "Remaining Ships: " + hitCounter
   }
-  if(ships[parseInt(tr.id)][coordinate.split("")[1]] === "" && hitCounter > 0 && missCounter > 0) {
-    document.getElementById(coordinate.charAt(1)).className = "miss"
+  if(ships[row][col] === "" && hitCounter > 0 && missCounter > 0 && document.getElementById(coordinate).className != "hit" && document.getElementById(coordinate).className != "miss") {
+    document.getElementById(coordinate).className = "miss"
     missCounter--
     document.getElementById("misses").innerHTML = "Remaining torpedos: " + missCounter
   }
   if(hitCounter == 0 && missCounter > 0) {
-    alert('you win')
+    document.getElementById("outcome").innerHTML = "You Win"
   }
   if(hitCounter > 0 && missCounter == 0) {
-    alert('you lose')
+    document.getElementById("outcome").innerHTML = "You Lose"
   }
 }
